@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>La Clandestina Racing Track N.C.</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #070707;
+      color: white;
+    }
+
+    header {
+      text-align: center;
+      padding: 30px 15px;
+      background:
+        radial-gradient(circle at top left, #ff008c33, transparent 35%),
+        radial-gradient(circle at top right, #00c8ff33, transparent 35%),
+        #0a0a0a;
+      border-bottom: 2px solid #222;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 38px;
+      color: white;
+      text-shadow:
+        -2px 0 #00c8ff,
+        2px 0 #ff008c;
+    }
+
+    header p {
+      margin-top: 8px;
+      color: #cccccc;
+      font-size: 16px;
+    }
+
+    .slogan {
+      color: #ff4fb2;
+      font-weight: bold;
+      margin-top: 12px;
+    }
+
+    .container {
+      width: 95%;
+      max-width: 1200px;
+      margin: 25px auto;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+
+    .card {
+      background: #111;
+      border: 1px solid #292929;
+      border-radius: 12px;
+      padding: 18px;
+      text-align: center;
+      box-shadow: 0 0 15px #000;
+    }
+
+    .card h2 {
+      margin: 0;
+      font-size: 28px;
+      color: #00c8ff;
+    }
+
+    .card span {
+      font-size: 13px;
+      color: #aaa;
+    }
+
+    .search-box {
+      margin-bottom: 15px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 14px;
+      border-radius: 10px;
+      border: 1px solid #333;
+      background: #111;
+      color: white;
+      font-size: 16px;
+      outline: none;
+    }
+
+    .search-box input:focus {
+      border-color: #ff008c;
+      box-shadow: 0 0 8px #ff008c55;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid #222;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+      background: #0d0d0d;
+    }
+
+    thead {
+      background: linear-gradient(90deg, #00aeea, #ff008c);
+    }
+
+    th {
+      padding: 14px 10px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    td {
+      padding: 13px 10px;
+      border-bottom: 1px solid #222;
+      text-align: center;
+    }
+
+    tbody tr:hover {
+      background: #171717;
+    }
+
+    .nombre {
+      text-align: left;
+      font-weight: bold;
+    }
+
+    .win {
+      color: #4cff94;
+      font-weight: bold;
+    }
+
+    .loss {
+      color: #ff6262;
+      font-weight: bold;
+    }
+
+    .percent {
+      color: #00c8ff;
+      font-weight: bold;
+    }
+
+    .empty {
+      padding: 45px;
+      color: #888;
+      text-align: center;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px 10px;
+      color: #777;
+      font-size: 13px;
+    }
+
+    @media (max-width: 700px) {
+      header h1 {
+        font-size: 27px;
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>LA CLANDESTINA</h1>
+  <p>RACING TRACK N.C. • SINCE 2025</p>
+  <div class="slogan">Seguimos Activo… La Clandestina!</div>
+</header>
+
+<div class="container">
+
+  <div class="stats">
+    <div class="card">
+      <h2 id="totalCarros">0</h2>
+      <span>CARROS</span>
+    </div>
+
+    <div class="card">
+      <h2 id="totalCarreras">0</h2>
+      <span>CARRERAS</span>
+    </div>
+
+    <div class="card">
+      <h2 id="totalGanadas">0</h2>
+      <span>VICTORIAS</span>
+    </div>
+
+    <div class="card">
+      <h2 id="lider">---</h2>
+      <span>LÍDER ACTUAL</span>
+    </div>
+  </div>
+
+  <div class="search-box">
+    <input
+      type="text"
+      id="buscar"
+      placeholder="🔎 Buscar carro o marca..."
+      onkeyup="mostrarCarros()"
+    >
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>CARRO</th>
+          <th>MARCA</th>
+          <th>GANADAS</th>
+          <th>DERROTAS</th>
+          <th>CARRERAS</th>
+          <th>% VICTORIAS</th>
+        </tr>
+      </thead>
+
+      <tbody id="tablaCarros"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<footer>
+  © 2026 La Clandestina Racing Track N.C.
+</footer>
+
+<script>
+
+  /*
+    AQUÍ VAN LOS CARROS.
+
+    EJEMPLO:
+    { nombre: "Honda Civic", marca: "Hot Wheels", ganadas: 0, derrotas: 0 }
+
+    NO TIENES QUE ESCRIBIR CARRERAS NI PORCIENTO.
+    LA PÁGINA LOS CALCULA SOLA.
+  */
+
+  const carros = [
+
+  ];
+
+  function calcularCarreras(carro) {
+    return carro.ganadas + carro.derrotas;
+  }
+
+  function calcularPorcentaje(carro) {
+    const total = calcularCarreras(carro);
+
+    if (total === 0) {
+      return 0;
+    }
+
+    return (carro.ganadas / total) * 100;
+  }
+
+  function mostrarCarros() {
+
+    const tabla = document.getElementById("tablaCarros");
+    const busqueda = document.getElementById("buscar").value.toLowerCase();
+
+    tabla.innerHTML = "";
+
+    const filtrados = carros.filter(carro =>
+      carro.nombre.toLowerCase().includes(busqueda) ||
+      carro.marca.toLowerCase().includes(busqueda)
+    );
+
+    if (filtrados.length === 0) {
+      tabla.innerHTML =
+        '<tr><td colspan="6" class="empty">Todavía no hay carros registrados.</td></tr>';
+    }
+
+    filtrados
+      .sort((a,b) => calcularPorcentaje(b) - calcularPorcentaje(a))
+      .forEach(carro => {
+
+        const carreras = calcularCarreras(carro);
+        const porcentaje = calcularPorcentaje(carro);
+
+        const fila = document.createElement("tr");
+
+        fila.innerHTML = `
+          <td class="nombre">${carro.nombre}</td>
+          <td>${carro.marca}</td>
+          <td class="win">${carro.ganadas}</td>
+          <td class="loss">${carro.derrotas}</td>
+          <td>${carreras}</td>
+          <td class="percent">${porcentaje.toFixed(1)}%</td>
+        `;
+
+        tabla.appendChild(fila);
+      });
+
+    actualizarResumen();
+  }
+
+  function actualizarResumen() {
+
+    let carreras = 0;
+    let victorias = 0;
+
+    carros.forEach(carro => {
+      carreras += calcularCarreras(carro);
+      victorias += carro.ganadas;
+    });
+
+    document.getElementById("totalCarros").textContent = carros.length;
+    document.getElementById("totalCarreras").textContent = carreras;
+    document.getElementById("totalGanadas").textContent = victorias;
+
+    if (carros.length === 0) {
+      document.getElementById("lider").textContent = "---";
+      return;
+    }
+
+    const ordenados = [...carros].sort(
+      (a,b) => calcularPorcentaje(b) - calcularPorcentaje(a)
+    );
+
+    document.getElementById("lider").textContent = ordenados[0].nombre;
+  }
+
+  mostrarCarros();
+
+</script>
+
+</body>
+</html>
